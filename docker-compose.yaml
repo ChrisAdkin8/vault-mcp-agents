@@ -1,0 +1,18 @@
+# Local development stack: Vault in dev mode.
+# WARNING: Dev mode is insecure — never use in production.
+
+services:
+  vault:
+    image: hashicorp/vault:1.17
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "dev-root-token"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 5s
+      timeout: 3s
+      retries: 5

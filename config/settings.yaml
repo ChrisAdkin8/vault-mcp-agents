@@ -1,0 +1,53 @@
+# Vault connection settings
+vault:
+  address: "http://127.0.0.1:8200"
+  # For production, use TLS:
+  # address: "https://vault.example.com:8200"
+  namespace: ""  # Vault Enterprise namespace, leave empty for OSS
+
+  # Human authentication method configured in Vault
+  auth_method: "userpass"  # Options: userpass, ldap, oidc
+
+  # GCP secrets engine mount path
+  gcp_secrets_mount: "gcp"
+
+  # Agent authentication uses AppRole
+  agent_approle_mount: "approle"
+
+# Agent definitions — each agent has a Vault AppRole identity and an MCP server target
+agents:
+  data_agent:
+    description: "Handles GCS and BigQuery operations"
+    mcp_server: "data_server"
+    vault_role: "data-agent-role"
+    # GCP impersonated account in Vault's GCP secrets engine
+    gcp_impersonated_account: "data-agent-gcp"
+
+  compute_agent:
+    description: "Handles GCE instance and infrastructure operations"
+    mcp_server: "compute_server"
+    vault_role: "compute-agent-role"
+    gcp_impersonated_account: "compute-agent-gcp"
+
+# MCP server endpoints
+mcp_servers:
+  data_server:
+    transport: "stdio"
+    command: "python"
+    args: ["-m", "vault_mcp_agents.mcp.data_server"]
+
+  compute_server:
+    transport: "stdio"
+    command: "python"
+    args: ["-m", "vault_mcp_agents.mcp.compute_server"]
+
+# LLM configuration for LangChain agents
+llm:
+  provider: "anthropic"  # Options: anthropic, openai
+  model: "claude-sonnet-4-20250514"
+  temperature: 0.0
+
+# GCP project default
+gcp:
+  project_id: "<Your GCP project id goes here>"
+  region: "us-central1"
